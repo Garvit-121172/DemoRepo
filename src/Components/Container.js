@@ -9,11 +9,10 @@ function Container() {
     }
     const time = new Date();
     time.setSeconds(time.getSeconds() + 500);
-    console.log(scorehandler);
     return (
         <div className="container">
             <NavBar expiryTimestamp={time} score={score} />
-            <Grid changefn={scorehandler} />
+            <Grid scorefn={scorehandler} sz={4} />
         </div>
     )
 }
