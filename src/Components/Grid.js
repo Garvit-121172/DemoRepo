@@ -1,7 +1,16 @@
 import React from 'react'
 import { useState } from 'react';
 import Cell from './Cell';
+
 function Grid({scorefn,sz}) {
+    var r=[-1,-1,-1,0,0,1,1,1];
+    var c=[-1,0,1,-1,1,-1,0,1];
+    function isSafe(x,y){
+    if(x>-1&&x<sz&&y>-1&&y<sz)
+    return true;
+    else
+    return false;
+   }
     const generteateGrid=(size)=>{
         const grid1=[];
         for(var i=0;i<size;i++){
@@ -30,7 +39,7 @@ function Grid({scorefn,sz}) {
         return grid1;
     }
     const [grid, setgrid] = useState(generteateGrid(sz));
-    function reveal_neigh(xyz){
+    const reveal_neigh=(xyz)=>{
         const newGrid=JSON.parse(JSON.stringify(grid));
         xyz.forEach(pair => {
             var x=pair.k;
@@ -41,32 +50,65 @@ function Grid({scorefn,sz}) {
             }       
         });
     }
-    function revealcell(i,j){
+    const rightclickfn=(e,x,y)=>{
+            e.preventDefault();
+            const newGrid=JSON.parse(JSON.stringify(grid));
+            newGrid[x][y].flaged=true;
+            setgrid(newGrid);
+    }
+    const revealcell=(i,j)=>{
+        var sc=0;
         console.log("revealing "+i+" "+j);
         const newGrid=JSON.parse(JSON.stringify(grid));
-        if(newGrid[i][j].clicked)
+        if(newGrid[i][j].clicked===true)
         return;
         newGrid[i][j].clicked=true;
-        setgrid(newGrid);
         if(newGrid[i][j].bombed){
             console.log("bomb aaya at "+i+" "+j);
+            newGrid[i][j].clicked=true;
         }
         else{
            if(newGrid[i][j].pts===0){
-            reveal_neigh(newGrid[i][j].neighbour);
-           }else{
+              let stack=[];
+              stack.push(newGrid[i][j]);
+              while(stack.length>0){
+                  let t=stack.pop();
+                  t.clicked=true;
+                  t.val=t.pts;
+                  for(var x=0;x<8;x++){
+                    if(isSafe(t.x+r[x],t.y+c[x])){
+                        if(!newGrid[t.x+r[x]][t.y+c[x]].clicked){
+                            if(newGrid[t.x+r[x]][t.y+c[x]].pts==0){
+                                stack.push(newGrid[t.x+r[x]][t.y+c[x]]);
+                            }
+                            else if(newGrid[t.x+r[x]][t.y+c[x]].pts!==-1){
+                                console.log((newGrid[t.x+r[x]][t.y+c[x]]));
+                                sc+=newGrid[t.x+r[x]][t.y+c[x]].pts
+                                newGrid[t.x+r[x]][t.y+c[x]].clicked=true;
+                                newGrid[t.x+r[x]][t.y+c[x]].val=newGrid[t.x+r[x]][t.y+c[x]].pts;
+                            }
+                      }
+                    }  
+              }
+              
+            }
+            scorefn(sc);   
+            setgrid(newGrid); 
+        }else{
+            newGrid[i][j].val=newGrid[i][j].pts;
             newGrid[i][j].val=newGrid[i][j].pts;
             scorefn(grid[i][j].pts);   
            }
         }
         setgrid(newGrid);
     }
+    console.log(grid);
     return  (
         <div className="grid" >
             {
                 grid.map((row,k) => (
                     row.map((cell,k)=>(
-                    <Cell details={cell} scorefn={scorefn} revealcell={revealcell} reveal_neigh={reveal_neigh}/>
+                    <Cell details={cell}  revealcell={revealcell}  rightclickfn={rightclickfn} />
                     ))
 
                 ))

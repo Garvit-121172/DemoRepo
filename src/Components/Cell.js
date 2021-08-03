@@ -1,22 +1,8 @@
 import React, { useState } from 'react'
-function Cell({details,scorefn,revealcell,reveal_neigh}) {
-    const [clicked, setclicked] = useState(details.clicked);
-    const [bomb, setbomb] = useState(details.pts==-1?true:false);
-    const [pts, setpts] = useState(details.pts);
-    const [val,setval]= useState(details.pts);
-    const [flag,setflag]= useState(details.flag);
-    var contextHandler=(e)=>{
-        e.preventDefault();
-        setflag(true);
-    }
-    var clickedfn=()=>{
-        if(details.clicked)
-        return;
-        revealcell(details.x,details.y)  
-    }
+function Cell({details,revealcell,rightclickfn}) {
     return (
         <>
-            <button onContextMenu={contextHandler} onClick={clickedfn} className={clicked?bomb?"bomb":"point":"notclicked"}>{val}</button>
+            <button onContextMenu={(e)=>rightclickfn(e,details.x,details.y)} onClick={()=>revealcell(details.x,details.y)} className={details.clicked?details.bomb?"bomb":"point":"notclicked"}>{details.pts}</button>
           
         </>
     )
