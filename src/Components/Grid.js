@@ -1,9 +1,11 @@
 import React from 'react'
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import Bomb from './Bomb';
 import Cell from './Cell';
+import Timer from './Timer';
+import NavBar from './NavBar'
 import GameOver from './GameOver';
-function Grid({scorefn,sz}) {
+function Grid({scorefn,score,sz}) {
     var r=[-1,-1,-1,0,0,1,1,1];
     var c=[-1,0,1,-1,1,-1,0,1];
     function isSafe(x,y){
@@ -39,26 +41,42 @@ function Grid({scorefn,sz}) {
         }
         return grid1;
     }
+    
+    const restartGame = () => {
+        const gotGrid=generteateGrid(sz);
+        setgrid(gotGrid);
+        setTime(0);
+        setgameover(false);
+      };
+      console.log("hamte pass aya "+sz);
     const [grid, setgrid] = useState(generteateGrid(sz));
-    const [GameOver, setGameOver] = useState(false)
+    const [gameover, setgameover] = useState(false)
+    const [restart, setRestart] = useState(false);
+    const [newTime, setTime] = useState(0);
+    useEffect(() => {
+        setgrid(generteateGrid(sz));
+        if(restart)
+        restartGame();
+    }, [sz,restart])
+    
     const rightclickfn=(e,x,y)=>{
             e.preventDefault();
             const newGrid=JSON.parse(JSON.stringify(grid));
             newGrid[x][y].flaged=true;
+            // newGrid[x][y].clicked=true;
             setgrid(newGrid);
     }
     const revealcell=(i,j)=>{
         var sc=0;
         console.log("revealing "+i+" "+j);
         const newGrid=JSON.parse(JSON.stringify(grid));
-        if(newGrid[i][j].clicked===true||GameOver)
+        if(newGrid[i][j].clicked===true||gameover||newGrid[i][j].flaged)
         return;
         newGrid[i][j].clicked=true;
         if(newGrid[i][j].bombed){
             console.log("bomb aaya at "+i+" "+j);
             newGrid[i][j].clicked=true;
             newGrid[i][j].val=<Bomb/>;
-            alert("bomb");
             for(let x=0;x<sz;x++){
                 for(let y=0;y<sz;y++){
                     if(newGrid[x][y].bombed){
@@ -69,7 +87,7 @@ function Grid({scorefn,sz}) {
                 }
             }
             setgrid(newGrid);
-            setGameOver(true);
+            setgameover(true);
 
         }
         else{
@@ -108,8 +126,7 @@ function Grid({scorefn,sz}) {
                 }
             }
             
-            setGameOver(!flag);
-            //check_GAME_WIN?:trav nd check if no if unselectd===mines,nonmines=0 
+            setgameover(!flag);
         }else{
             newGrid[i][j].val=newGrid[i][j].pts;
             newGrid[i][j].val=newGrid[i][j].pts;
@@ -122,25 +139,19 @@ function Grid({scorefn,sz}) {
                 }
             }
             
-            setGameOver(!flag);
-            //check_game_WIN?:trav nd check if no if unselectd===mines,,nonmines=0 
+            setgameover(!flag);
         }
         }
         setgrid(newGrid);
     }
     return  (
-        <div>
-        {GameOver?"Game-Over":"IN-Progrss"}
-      {/* <Timer /> */}
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          position: "relative",
-        }}
-      >
-        {/* {gameOver && <Modal restartGame={restartGame} />} */}
+        <div style={{paddingTop:"5px"}} >
+       <div
+      style={{ padding:"2px 1px",boxShadow: "0 6px 3px rgba(0,0,0,0.3)",marginLeft:sz==4?"560px":sz==8?"490px":"395px",position: "relative",width:sz==4?"160px":sz==8?"320px":"480px" }}
+    >
+      {gameover && <GameOver reset={restartGame} sz={sz}/>}
+      <NavBar gameover={gameover}  stage={sz} />
+      
         {grid.map((singleRow, index1) => {
           return (
             <div style={{ display: "flex" }} key={index1}>

@@ -1,38 +1,30 @@
-import React from 'react'
-import { useState } from 'react';
-import GolfCourseIcon from '@material-ui/icons/GolfCourse';
-import TimerIcon from '@material-ui/icons/Timer';
-import { useTimer } from 'react-timer-hook';
-function NavBar({expiryTimestamp,score}) {
-    const {
-        seconds,
-        start,
-        restart,
-      } = useTimer({ expiryTimestamp, onExpire: () => console.warn('onExpire called') });
-  
-    return (
-        <div className="navbar" >
-            <select className="select" >
-                <option>Easy</option>
-                <option>Medium</option>
-                <option>Hard</option>
-            </select>
-            <div className="flag-div">
-                <GolfCourseIcon className="icon" />
-                <p>{score}</p>
-            </div>
-            <div className="timer-div">
-                <TimerIcon className="icon" />
-                <h2><span>{seconds}</span></h2>
-            </div>
-            <button onClick={start} >as </button>
-            <button onClick={() => {
-        const time = new Date();
-        time.setSeconds(time.getSeconds() + 300);
-        restart(time)
-      }}>Restart</button>
-        </div>
-    )
-}
+import React from "react";
+import Timer from "./Timer";
 
-export default NavBar
+export default function NavBar({ gameover, setTime,stage }) {
+    let w="";
+    if(stage==4)
+    w="160px";
+    if(stage==8)
+    w="320px";
+    if(stage==12)
+    w="480px";
+    return (
+    <div
+      style={{
+        width:w,
+        background: "#4a752c",
+        padding: "10px 0",
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-around",
+        alignItems: "center",
+      }}
+    >
+      <span role="img" aria-label="flag" style={{ paddingBottom: 10 }}>
+        🚩
+      </span>
+      <Timer gameover={gameover}   />
+    </div>
+  );
+}

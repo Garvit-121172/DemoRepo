@@ -8,7 +8,18 @@ function Cell({details,revealcell,rightclickfn}) {
     color: numColorCode(details.val),
   };
     return (
-        <div onContextMenu={(e)=>rightclickfn(e,details.x,details.y)} onClick={()=>revealcell(details.x,details.y)} style={cellStyle} className="cellStyle">{details.pts}
+        <div onContextMenu={(e)=>rightclickfn(e,details.x,details.y)} onClick={()=>revealcell(details.x,details.y)} style={cellStyle} className="cellStyle">
+        {!details.clicked && details.flaged ? (
+          "🚩"
+        ) : details.clicked && details.val !== 0 ? (
+          details.pts === -1 ? (
+            <Bomb />
+          ) : (
+            details.val
+          )
+        ) : (
+          ""
+        )}
           
         </div>
     )

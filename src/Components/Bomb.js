@@ -1,11 +1,22 @@
-import React from 'react'
+import React from "react";
 
-function Bomb() {
-    return (
-        <div className="circle">
-            
-        </div>
-    )
+export default function Bomb() {
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <div
+        style={{
+          height: 23,
+          width: 23,
+          borderRadius: 20,
+          background: "rgba(0,0,0,0.4)",
+        }}
+      ></div>
+    </div>
+  );
 }
-
-export default Bomb

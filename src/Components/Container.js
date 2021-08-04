@@ -12,7 +12,6 @@ function Container() {
     return (
         <div className="container">
             <NavBar expiryTimestamp={time} score={score} />
-            <Grid scorefn={scorehandler} sz={4} />
         </div>
     )
 }
