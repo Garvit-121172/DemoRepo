@@ -1,7 +1,8 @@
 import React from 'react'
 import { useState } from 'react';
+import Bomb from './Bomb';
 import Cell from './Cell';
-
+import GameOver from './GameOver';
 function Grid({scorefn,sz}) {
     var r=[-1,-1,-1,0,0,1,1,1];
     var c=[-1,0,1,-1,1,-1,0,1];
@@ -10,7 +11,7 @@ function Grid({scorefn,sz}) {
     return true;
     else
     return false;
-   }
+    }
     const generteateGrid=(size)=>{
         const grid1=[];
         for(var i=0;i<size;i++){
@@ -26,10 +27,10 @@ function Grid({scorefn,sz}) {
                 subar.push({
                     pts:pts,
                     clicked:false,
-                    val:"",
                     neighbour:n,
                     bombed:pts===-1?true:false,
                     flaged:false,
+                    val:"",
                     x:i,
                     y:j
                 })
@@ -39,17 +40,7 @@ function Grid({scorefn,sz}) {
         return grid1;
     }
     const [grid, setgrid] = useState(generteateGrid(sz));
-    const reveal_neigh=(xyz)=>{
-        const newGrid=JSON.parse(JSON.stringify(grid));
-        xyz.forEach(pair => {
-            var x=pair.k;
-            var y=pair.l;
-            if(!newGrid[x][y].clicked){
-                revealcell(x,y);
-                setgrid(newGrid);
-            }       
-        });
-    }
+    const [GameOver, setGameOver] = useState(false)
     const rightclickfn=(e,x,y)=>{
             e.preventDefault();
             const newGrid=JSON.parse(JSON.stringify(grid));
@@ -60,12 +51,26 @@ function Grid({scorefn,sz}) {
         var sc=0;
         console.log("revealing "+i+" "+j);
         const newGrid=JSON.parse(JSON.stringify(grid));
-        if(newGrid[i][j].clicked===true)
+        if(newGrid[i][j].clicked===true||GameOver)
         return;
         newGrid[i][j].clicked=true;
         if(newGrid[i][j].bombed){
             console.log("bomb aaya at "+i+" "+j);
             newGrid[i][j].clicked=true;
+            newGrid[i][j].val=<Bomb/>;
+            alert("bomb");
+            for(let x=0;x<sz;x++){
+                for(let y=0;y<sz;y++){
+                    if(newGrid[x][y].bombed){
+                        newGrid[x][y].clicked=true;
+                        newGrid[x][y].val=<Bomb/>;
+
+                    }
+                }
+            }
+            setgrid(newGrid);
+            setGameOver(true);
+
         }
         else{
            if(newGrid[i][j].pts===0){
@@ -74,6 +79,7 @@ function Grid({scorefn,sz}) {
               while(stack.length>0){
                   let t=stack.pop();
                   t.clicked=true;
+                  if(t.pts!==0)
                   t.val=t.pts;
                   for(var x=0;x<8;x++){
                     if(isSafe(t.x+r[x],t.y+c[x])){
@@ -85,35 +91,74 @@ function Grid({scorefn,sz}) {
                                 console.log((newGrid[t.x+r[x]][t.y+c[x]]));
                                 sc+=newGrid[t.x+r[x]][t.y+c[x]].pts
                                 newGrid[t.x+r[x]][t.y+c[x]].clicked=true;
+                                if(newGrid[t.x+r[x]][t.y+c[x]].pts!==0)
                                 newGrid[t.x+r[x]][t.y+c[x]].val=newGrid[t.x+r[x]][t.y+c[x]].pts;
                             }
                       }
                     }  
               }
-              
             }
             scorefn(sc);   
             setgrid(newGrid); 
+            let flag=false;
+            for(let x=0;x<sz;x++){
+                for(let y=0;y<sz;y++){
+                    if(!newGrid[x][y].clicked&&!newGrid[x][y].bombed)
+                    {flag=true;break;}
+                }
+            }
+            
+            setGameOver(!flag);
+            //check_GAME_WIN?:trav nd check if no if unselectd===mines,nonmines=0 
         }else{
             newGrid[i][j].val=newGrid[i][j].pts;
             newGrid[i][j].val=newGrid[i][j].pts;
             scorefn(grid[i][j].pts);   
-           }
+            let flag=false;
+            for(let x=0;x<sz;x++){
+                for(let y=0;y<sz;y++){
+                    if(!newGrid[x][y].clicked&&!newGrid[x][y].bombed)
+                    {flag=true;break;}
+                }
+            }
+            
+            setGameOver(!flag);
+            //check_game_WIN?:trav nd check if no if unselectd===mines,,nonmines=0 
+        }
         }
         setgrid(newGrid);
     }
-    console.log(grid);
     return  (
-        <div className="grid" >
-            {
-                grid.map((row,k) => (
-                    row.map((cell,k)=>(
-                    <Cell details={cell}  revealcell={revealcell}  rightclickfn={rightclickfn} />
-                    ))
-
-                ))
-            }
-        </div>
+        <div>
+        {GameOver?"Game-Over":"IN-Progrss"}
+      {/* <Timer /> */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          position: "relative",
+        }}
+      >
+        {/* {gameOver && <Modal restartGame={restartGame} />} */}
+        {grid.map((singleRow, index1) => {
+          return (
+            <div style={{ display: "flex" }} key={index1}>
+              {singleRow.map((singleBlock, index2) => {
+                return (
+                  <Cell
+                    revealcell={revealcell}
+                    details={singleBlock}
+                    rightclickfn={rightclickfn}
+                    key={index2}
+                  />
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+    </div>
     )
 }
 

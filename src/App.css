@@ -1,13 +1,6 @@
-.container {
-  border: 1px solid black;
-  width: 140px;
-  height: 390px;
-  margin: auto;
-}
-.navbar {
-  display: flex;
-  justify-content: space-evenly;
-  padding: 6px;
+.App {
+  text-align: center;
+  align-items: center;
 }
 .grid {
   display: flex;
@@ -15,54 +8,13 @@
   background-color: aqua;
 }
 
-.bomb {
-  background: red;
-  padding: 10px;
-  font-size: 10px;
-  height: 35px;
-  width: 35px;
-}
-.notclicked {
-  background-color: green;
-  padding: 10px;
-  font-size: 10px;
-  height: 35px;
-  width: 35px;
-}
-.point {
-  background-color: cornflowerblue;
-  padding: 10px;
-  font-size: 10px;
-  height: 35px;
-  width: 35px;
-}
-.timer-div {
+.cellStyle {
+  width: 40px;
+  height: 40px;
   display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  background-color: aqua;
-  padding: 10px;
-  width: 50px;
-}
-.flag-div {
-  width: 50px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  background-color: aqua;
-  padding: 10px;
-}
-.icon {
-  padding-top: 19px;
-  margin-right: 5px;
-}
-.select {
-  height: 55px;
-  width: 100px;
-  text-align: center;
   justify-content: center;
-  margin-top: 15px;
-  padding: 15px;
-  font-size: 20px;
-  background-color: aqua;
+  align-items: center;
+  cursor: pointer;
+  font-size: 30px;
+  font-weight: 800;
 }
